@@ -613,6 +613,17 @@ return (function () {
             }
         }
 
+        function selectorContiansId(selectorString) {
+            var parts = selectorString.split(' ');
+            for (var i = 0; i < parts.length; i++) {
+                if (parts[i].startsWith("#")) {
+                    return true;
+                }
+            }
+            
+            return false;
+        }
+
         function querySelectorAllExt(elt, selector) {
             if (selector.indexOf("closest ") === 0) {
                 return [closest(elt, normalizeSelector(selector.substr(8)))];
@@ -632,6 +643,15 @@ return (function () {
                 return [window];
             } else if (selector === 'body') {
                 return [document.body];
+            } else if(selectorContiansId(selector)) {
+                var parts = selector.split(',');
+                var formattedSelector = parts.map(function(part) {
+                    var trimmedPart = part.trim();
+                    return trimmedPart.startsWith("#") ? 
+                        '[id="' + trimmedPart.slice(1) + '"]' : 
+                        normalizeSelector(trimmedPart);
+                }).join(',');
+                return getDocument().querySelectorAll(formattedSelector);
             } else {
                 return getDocument().querySelectorAll(normalizeSelector(selector));
             }
@@ -854,7 +874,7 @@ return (function () {
                         id = id.substring(1);
                     }
                     var oobValue = oobSelectValue[1] || "true";
-                    var oobElement = fragment.querySelector("#" + id);
+                    var oobElement = fragment.querySelector('[id="' + id + '"]');
                     if (oobElement) {
                         oobSwap(oobValue, oobElement, settleInfo);
                     }
