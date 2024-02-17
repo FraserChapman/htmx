@@ -613,6 +613,11 @@ return (function () {
             }
         }
 
+
+        function createIdSelector(id) {
+            return "[id='" + id + "']";
+        }
+
         function selectorContiansId(selectorString) {
             var parts = selectorString.split(' ');
             for (var i = 0; i < parts.length; i++) {
@@ -648,7 +653,7 @@ return (function () {
                 var formattedSelector = parts.map(function(part) {
                     var trimmedPart = part.trim();
                     return trimmedPart.startsWith("#") ? 
-                        '[id="' + trimmedPart.slice(1) + '"]' : 
+                        createIdSelector(trimmedPart.slice(1)) : 
                         normalizeSelector(trimmedPart);
                 }).join(',');
                 return getDocument().querySelectorAll(formattedSelector);
@@ -874,7 +879,7 @@ return (function () {
                         id = id.substring(1);
                     }
                     var oobValue = oobSelectValue[1] || "true";
-                    var oobElement = fragment.querySelector('[id="' + id + '"]');
+                    var oobElement = fragment.querySelector(createIdSelector(id));
                     if (oobElement) {
                         oobSwap(oobValue, oobElement, settleInfo);
                     }
@@ -904,7 +909,7 @@ return (function () {
                 if (id && id.length > 0) {
                     var normalizedId = id.replace("'", "\\'");
                     var normalizedTag = newNode.tagName.replace(':', '\\:');
-                    var oldNode = parentNode.querySelector(normalizedTag + "[id='" + normalizedId + "']");
+                    var oldNode = parentNode.querySelector(normalizedTag + createIdSelector(normalizedId));
                     if (oldNode && oldNode !== parentNode) {
                         var newAttributes = newNode.cloneNode();
                         cloneAttributes(newNode, oldNode);
